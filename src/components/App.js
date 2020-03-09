@@ -7,7 +7,7 @@ import { clearFields } from "../madlibs";
 
 import Prompt from './Prompt';
 
-const App = ({ essayText, fieldOrder, allFieldsAnswered }) => {
+const App = ({ clearAllFields, essayText, fieldOrder, allFieldsAnswered }) => {
   const [ isEditing, setIsEditing ] = useState(false);
 
   const editableEssayText = () => {
@@ -15,7 +15,7 @@ const App = ({ essayText, fieldOrder, allFieldsAnswered }) => {
   }
 
   const startOver = () => {
-    clearFields();
+    clearAllFields();
     setIsEditing(!isEditing);
   }
 
@@ -95,7 +95,7 @@ const TextBox = styled.textarea`
 `;
 
 App.propTypes = {
-  clearFields: PropTypes.func.isRequired,
+  clearAllFields: PropTypes.func.isRequired,
   essayText: PropTypes.string.isRequired,
   fieldOrder: PropTypes.array.isRequired,
   allFieldsAnswered: PropTypes.bool.isRequired,
@@ -107,7 +107,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    clearFields: () => dispatch(clearFields())
+    clearAllFields: () => dispatch(clearFields())
   }
 }
 

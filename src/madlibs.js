@@ -32,9 +32,11 @@ export const INITIAL_STATE = {
 export function reducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case CLEAR_FIELDS: {
-      console.log('hi', ...INITIAL_STATE)
       return {
-        ...INITIAL_STATE
+        ...state,
+        fieldAnswers: {},
+        essayText: "",
+        allFieldsAnswered: false,
       };
     }
 
