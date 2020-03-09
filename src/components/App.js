@@ -36,7 +36,7 @@ const App = ({ dispatch, essayText, fieldOrder }) => {
             </div>
             :
             <div>
-              <div>{essayText}</div>
+              <div dangerouslySetInnerHTML={{__html: essayText}}></div>
               <button tabIndex="5" onClick={() => setIsEditing(!isEditing)}>Edit</button>
             </div>
           }

@@ -31,16 +31,27 @@ export function reducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case SUBMIT_FIELD: {
       const fieldName = action.payload.fieldName;
-      state.fieldAnswers[fieldName] = action.payload.answer;
+      const answer = action.payload.answer;
+      state.fieldAnswers[fieldName] = answer;
 
-      // Get all fieldAnswers
       let essayText = state.essayText.split('.');
-      console.log(essayText);
-      const textOptions = getTextTemplates(fieldName);
-      const randNum = Math.floor(Math.random() * 6);
-      const randText = textOptions[randNum];
-      console.log(randText);
-      let newEssayText = randText.replace('$answer', action.payload.answer);
+      let newEssayText = '';
+
+      const fieldAnswers = state.fieldAnswers;
+      const fieldOrder = state.fieldOrder;
+
+      for(const key in fieldAnswers) {
+        if (key && fieldName === key) {
+          const textOptions = getTextTemplates(key);
+          const randNum = Math.floor(Math.random() * (textOptions.length - 1));
+          const randText = answer.length ? textOptions[randNum].replace('$answer', `<b>${answer}</b>`) : '';
+  
+          newEssayText = `${newEssayText} ${randText}`
+        } else {
+          const oldAnswer = essayText[fieldOrder.indexOf(key)];
+          newEssayText = `${newEssayText} ${oldAnswer}`
+        }
+      }
 
       return {
         ...state,
