@@ -31,32 +31,55 @@ export const INITIAL_STATE = {
 export function reducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case SUBMIT_FIELD: {
+      // Define constants
+      const fieldAnswers = state.fieldAnswers;
       const fieldName = action.payload.fieldName;
       const answer = action.payload.answer;
-      state.fieldAnswers[fieldName] = answer;
 
-      let essayText = state.essayText.split('.');
-      let newEssayText = '';
+      const isDifferentAnswer = !fieldAnswers[fieldName] ? answer !== "" : answer !== fieldAnswers[fieldName].answer;
 
-      const fieldAnswers = state.fieldAnswers;
-      const fieldOrder = state.fieldOrder;
+      // Short circuit on unchanged answer
+      if (!isDifferentAnswer) {
+        return {
+          ...state
+        };
+      }
+      
+      const retrieveTemplateNum = (newFieldName, field) => {
+        const textOptions = getTextTemplates(newFieldName);
+        const newTemplateNum = Math.floor(Math.random() * (textOptions.length - 1));
 
-      for(const key in fieldAnswers) {
-        if (key && fieldName === key) {
-          const textOptions = getTextTemplates(key);
-          const randNum = Math.floor(Math.random() * (textOptions.length - 1));
-          const randText = answer.length ? textOptions[randNum].replace('$answer', `<b>${answer}</b>`) : '';
-  
-          newEssayText = `${newEssayText} ${randText}`
-        } else {
-          const oldAnswer = essayText[fieldOrder.indexOf(key)];
-          newEssayText = oldAnswer ? `${newEssayText} ${oldAnswer}.` : `${newEssayText}`;
+        return field && field.templateNum ? field.templateNum : newTemplateNum
+      }
+
+      // Set new field answer
+      fieldAnswers[fieldName] = {
+        answer,
+        templateNum: retrieveTemplateNum(fieldName, fieldAnswers[fieldName])
+      };
+
+      // console.log(fieldAnswers)
+      
+      // Input/Output Data
+      let newEssayText = [];
+
+      // Generate essay text with changes
+      for (const key in fieldAnswers) {
+        // console.log(key, key.length)
+        if (key && key.length) {
+          const newAnswer = fieldName === key ? answer : fieldAnswers[key].answer;
+          // console.log(newAnswer)
+          if (newAnswer) {
+            const newText = getTextTemplates(key)[fieldAnswers[key].templateNum].replace('$answer', `<b>${newAnswer}</b>`);
+            newEssayText.push(newText)
+          } 
         }
       }
 
       return {
         ...state,
-        essayText: newEssayText
+        // allFieldsAnswered: Object.values(state.fieldAnswers).length === state.fieldOrder.length,
+        essayText: newEssayText.join(' ')
       }
     }
 

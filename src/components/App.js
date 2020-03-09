@@ -5,9 +5,8 @@ import styled from 'styled-components';
 
 import Prompt from './Prompt';
 
-const App = ({ dispatch, essayText, fieldOrder, allFieldsAnswered }) => {
+const App = ({ essayText, fieldOrder, allFieldsAnswered }) => {
   const propTypes = {
-    dispatch: PropTypes.func.isRequired,
     essayText: PropTypes.string.isRequired,
     fieldOrder: PropTypes.array.isRequired,
     allFieldsAnswered: PropTypes.bool.isRequired,
@@ -15,36 +14,46 @@ const App = ({ dispatch, essayText, fieldOrder, allFieldsAnswered }) => {
 
   const [ isEditing, setIsEditing ] = useState(false);
 
+  const editableEssayText = () => {
+    console.log(essayText);
+    console.log(essayText.replace('<b>', ''))
+    console.log(essayText.replace('</b>', ''))
+    console.log(essayText.replace('<b>', '').replace('</b>', ''))
+    return essayText.replace('<b>', '').replace('</b>', '')
+  }
+
   return (
     <>
-      {!isEditing &&
-        <Left>
-          <Title>About Me</Title>
-          {fieldOrder.map(fieldName => {
-            return (
-              <Prompt key={fieldName} fieldName={fieldName} />
-            );
-          })}
-        </Left>
-      }
-      <Right>
-        <Title>Your essay text</Title>
-        <div>
-          {isEditing ? 
-            <div>
-              <textarea value={essayText} />
-              <button onClick={() => setIsEditing(!isEditing)}>Start Over</button>
-            </div>
-            :
+      {!isEditing ?
+        <>
+          <Left>
+            <Title>About Me</Title>
+            {fieldOrder.map(fieldName => {
+              return (
+                <Prompt key={fieldName} fieldName={fieldName} />
+              );
+            })}
+          </Left>
+          <Right>
+            <Title>Your essay text</Title>
             <div>
               <div dangerouslySetInnerHTML={{__html: essayText}}></div>
               {allFieldsAnswered &&
-                <button tabIndex="5" onClick={() => setIsEditing(!isEditing)}>Edit</button>
+                <button onClick={() => setIsEditing(!isEditing)}>Edit</button>
               }
             </div>
-          }
+          </Right>
+        </>
+        :
+        <div>
+          <Title>Your essay text</Title>
+          <div>
+            <textarea value={editableEssayText()} />
+            <button onClick={() => setIsEditing(!isEditing)}>Start Over</button>
+          </div>
         </div>
-      </Right>
+      }
+      
     </>
   );
 }

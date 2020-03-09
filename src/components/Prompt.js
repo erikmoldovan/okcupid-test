@@ -19,7 +19,6 @@ const Prompt = ({ dispatch, fieldName }) => {
       <Input
         type="text"
         id={fieldName}
-        tabIndex="4"
         onBlur={(e) => dispatch(submitField({ id: fieldName, answer: e.target.value }))}
       />
     </PromptWrapper>
