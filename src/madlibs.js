@@ -5,6 +5,7 @@ import { getTextTemplates } from './helpers';
 // ----------------------------------------------------------------------------
 
 export const SUBMIT_FIELD = "MADLIBS.SUBMIT_FIELD";
+export const CLEAR_FIELDS = "MADLIBS.CLEAR_FIELDS";
 
 // Initial state
 // ----------------------------------------------------------------------------
@@ -30,6 +31,12 @@ export const INITIAL_STATE = {
 
 export function reducer(state = INITIAL_STATE, action) {
   switch (action.type) {
+    case CLEAR_FIELDS: {
+      return {
+        ...INITIAL_STATE
+      };
+    }
+
     case SUBMIT_FIELD: {
       // Define constants
       const fieldAnswers = state.fieldAnswers;
@@ -57,18 +64,15 @@ export function reducer(state = INITIAL_STATE, action) {
         answer,
         templateNum: retrieveTemplateNum(fieldName, fieldAnswers[fieldName])
       };
-
-      // console.log(fieldAnswers)
       
       // Input/Output Data
       let newEssayText = [];
 
       // Generate essay text with changes
       for (const key in fieldAnswers) {
-        // console.log(key, key.length)
         if (key && key.length) {
           const newAnswer = fieldName === key ? answer : fieldAnswers[key].answer;
-          // console.log(newAnswer)
+
           if (newAnswer) {
             const newText = getTextTemplates(key)[fieldAnswers[key].templateNum].replace('$answer', `<b>${newAnswer}</b>`);
             newEssayText.push(newText)
@@ -78,7 +82,7 @@ export function reducer(state = INITIAL_STATE, action) {
 
       return {
         ...state,
-        // allFieldsAnswered: Object.values(state.fieldAnswers).length === state.fieldOrder.length,
+        allFieldsAnswered: Object.values(state.fieldAnswers).length === state.fieldOrder.length,
         essayText: newEssayText.join(' ')
       }
     }
@@ -94,4 +98,8 @@ export function reducer(state = INITIAL_STATE, action) {
 
 export function submitField({ id, answer }) {
   return { type: SUBMIT_FIELD, payload: { fieldName: id, answer } };
+}
+
+export function clearFields() {
+  return { type: CLEAR_FIELDS };
 }

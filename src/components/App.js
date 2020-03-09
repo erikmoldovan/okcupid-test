@@ -3,10 +3,13 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import styled from 'styled-components';
 
+import { clearFields } from "../madlibs";
+
 import Prompt from './Prompt';
 
-const App = ({ essayText, fieldOrder, allFieldsAnswered }) => {
+const App = ({ dispatch, essayText, fieldOrder, allFieldsAnswered }) => {
   const propTypes = {
+    dispatch: PropTypes.func.isRequired,
     essayText: PropTypes.string.isRequired,
     fieldOrder: PropTypes.array.isRequired,
     allFieldsAnswered: PropTypes.bool.isRequired,
@@ -15,11 +18,12 @@ const App = ({ essayText, fieldOrder, allFieldsAnswered }) => {
   const [ isEditing, setIsEditing ] = useState(false);
 
   const editableEssayText = () => {
-    console.log(essayText);
-    console.log(essayText.replace('<b>', ''))
-    console.log(essayText.replace('</b>', ''))
-    console.log(essayText.replace('<b>', '').replace('</b>', ''))
-    return essayText.replace('<b>', '').replace('</b>', '')
+    return essayText.replace(/(<([^>]+)>)/ig, '');
+  }
+
+  const startOver = () => {
+    dispatch(clearFields())
+    setIsEditing(!isEditing);
   }
 
   return (
@@ -45,13 +49,13 @@ const App = ({ essayText, fieldOrder, allFieldsAnswered }) => {
           </Right>
         </>
         :
-        <div>
+        <Pane>
           <Title>Your essay text</Title>
           <div>
             <textarea value={editableEssayText()} />
-            <button onClick={() => setIsEditing(!isEditing)}>Start Over</button>
+            <button onClick={() => startOver()}>Start Over</button>
           </div>
-        </div>
+        </Pane>
       }
       
     </>
