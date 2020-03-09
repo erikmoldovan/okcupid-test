@@ -21,6 +21,7 @@ export const INITIAL_STATE = {
 
   fieldAnswers: {},
   essayText: "",
+  allFieldsAnswered: false,
 };
 
 
@@ -49,7 +50,7 @@ export function reducer(state = INITIAL_STATE, action) {
           newEssayText = `${newEssayText} ${randText}`
         } else {
           const oldAnswer = essayText[fieldOrder.indexOf(key)];
-          newEssayText = oldAnswer ? `${newEssayText} ${oldAnswer}` : `${newEssayText}`;
+          newEssayText = oldAnswer ? `${newEssayText} ${oldAnswer}.` : `${newEssayText}`;
         }
       }
 

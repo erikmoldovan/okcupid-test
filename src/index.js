@@ -24,6 +24,7 @@ const GlobalStyles = createGlobalStyle`
   
   #root {
     display: flex;
+    height: 100vh;
   }
 `;
 
