@@ -73,3 +73,15 @@ export function getTextTemplates(fieldName) {
       return [];
   }
 }
+
+export const retrieveTemplateNum = newFieldName => {
+  return Math.floor(Math.random() * (getTextTemplates(newFieldName).length - 1));
+};
+
+export const areAllFieldsAnswered = (fields, fieldOrder) => {
+  const fieldsArr = Object.values(fields);
+
+  return fieldsArr.length === fieldOrder.length ?
+    fieldsArr.every(field => field.answer !== "") :
+    false;
+}

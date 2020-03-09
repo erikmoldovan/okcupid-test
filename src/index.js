@@ -16,15 +16,32 @@ const GlobalStyles = createGlobalStyle`
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #f4f4f4;
     padding: 0;
     margin: 0;
     font-family: sans-serif;
+    background: #0000ff;
   }
   
   #root {
     display: flex;
-    height: 100vh;
+    min-height: calc(100vh - 48px);
+    margin: 24px;
+    background: #f3f5f9;
+  }
+
+  button {
+    background: rgba(96, 209, 136, 1);
+    color: #ffffff;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+    padding: 12px 36px;
+    border-radius: 4px;
+    transition: background 0.3s;
+
+    &:hover {
+      background: rgba(96, 209, 136, 0.6);
+    }
   }
 `;
 

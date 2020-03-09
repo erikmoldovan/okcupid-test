@@ -1,5 +1,5 @@
 import { FIELD_NAMES } from "./constants";
-import { getTextTemplates } from './helpers';
+import { getTextTemplates, retrieveTemplateNum, areAllFieldsAnswered } from './helpers';
 
 // Action types
 // ----------------------------------------------------------------------------
@@ -32,6 +32,7 @@ export const INITIAL_STATE = {
 export function reducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case CLEAR_FIELDS: {
+      console.log('hi', ...INITIAL_STATE)
       return {
         ...INITIAL_STATE
       };
@@ -43,7 +44,9 @@ export function reducer(state = INITIAL_STATE, action) {
       const fieldName = action.payload.fieldName;
       const answer = action.payload.answer;
 
-      const isDifferentAnswer = !fieldAnswers[fieldName] ? answer !== "" : answer !== fieldAnswers[fieldName].answer;
+      const isDifferentAnswer = !fieldAnswers[fieldName] ?
+        answer !== "" :
+        answer !== fieldAnswers[fieldName].answer;
 
       // Short circuit on unchanged answer
       if (!isDifferentAnswer) {
@@ -51,30 +54,30 @@ export function reducer(state = INITIAL_STATE, action) {
           ...state
         };
       }
-      
-      const retrieveTemplateNum = (newFieldName, field) => {
-        const textOptions = getTextTemplates(newFieldName);
-        const newTemplateNum = Math.floor(Math.random() * (textOptions.length - 1));
-
-        return field && field.templateNum ? field.templateNum : newTemplateNum
-      }
 
       // Set new field answer
+      const answerTemplateNum = fieldAnswers[fieldName] ?
+        fieldAnswers[fieldName].templateNum :
+        undefined;
       fieldAnswers[fieldName] = {
         answer,
-        templateNum: retrieveTemplateNum(fieldName, fieldAnswers[fieldName])
+        templateNum: fieldAnswers[fieldName] && answerTemplateNum ?
+          answerTemplateNum :
+          retrieveTemplateNum(fieldName, fieldAnswers[fieldName])
       };
       
-      // Input/Output Data
+      // Generate essay text with changes
       let newEssayText = [];
 
-      // Generate essay text with changes
       for (const key in fieldAnswers) {
         if (key && key.length) {
-          const newAnswer = fieldName === key ? answer : fieldAnswers[key].answer;
+          const newAnswer = fieldName === key ?
+            answer :
+            fieldAnswers[key].answer;
 
           if (newAnswer) {
-            const newText = getTextTemplates(key)[fieldAnswers[key].templateNum].replace('$answer', `<b>${newAnswer}</b>`);
+            const keyTemplateNum = fieldAnswers[key].templateNum;
+            const newText = getTextTemplates(key)[keyTemplateNum].replace('$answer', `<b>${newAnswer}</b>`);
             newEssayText.push(newText)
           } 
         }
@@ -82,7 +85,7 @@ export function reducer(state = INITIAL_STATE, action) {
 
       return {
         ...state,
-        allFieldsAnswered: Object.values(state.fieldAnswers).length === state.fieldOrder.length,
+        allFieldsAnswered: areAllFieldsAnswered(state.fieldAnswers, state.fieldOrder),
         essayText: newEssayText.join(' ')
       }
     }

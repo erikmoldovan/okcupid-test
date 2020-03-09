@@ -7,14 +7,7 @@ import { clearFields } from "../madlibs";
 
 import Prompt from './Prompt';
 
-const App = ({ dispatch, essayText, fieldOrder, allFieldsAnswered }) => {
-  const propTypes = {
-    dispatch: PropTypes.func.isRequired,
-    essayText: PropTypes.string.isRequired,
-    fieldOrder: PropTypes.array.isRequired,
-    allFieldsAnswered: PropTypes.bool.isRequired,
-  };
-
+const App = ({ essayText, fieldOrder, allFieldsAnswered }) => {
   const [ isEditing, setIsEditing ] = useState(false);
 
   const editableEssayText = () => {
@@ -22,7 +15,7 @@ const App = ({ dispatch, essayText, fieldOrder, allFieldsAnswered }) => {
   }
 
   const startOver = () => {
-    dispatch(clearFields())
+    clearFields();
     setIsEditing(!isEditing);
   }
 
@@ -30,32 +23,30 @@ const App = ({ dispatch, essayText, fieldOrder, allFieldsAnswered }) => {
     <>
       {!isEditing ?
         <>
-          <Left>
+          <Pane>
             <Title>About Me</Title>
             {fieldOrder.map(fieldName => {
               return (
                 <Prompt key={fieldName} fieldName={fieldName} />
               );
             })}
-          </Left>
-          <Right>
+          </Pane>
+          <RightPane>
             <Title>Your essay text</Title>
-            <div>
-              <div dangerouslySetInnerHTML={{__html: essayText}}></div>
-              {allFieldsAnswered &&
-                <button onClick={() => setIsEditing(!isEditing)}>Edit</button>
-              }
-            </div>
-          </Right>
+            <Preview dangerouslySetInnerHTML={{__html: essayText}}></Preview>
+            {allFieldsAnswered &&
+              <button onClick={() => setIsEditing(!isEditing)}>Edit</button>
+            }
+          </RightPane>
         </>
         :
-        <Pane>
-          <Title>Your essay text</Title>
-          <div>
-            <textarea value={editableEssayText()} />
+        <EditPane>
+          <EditContainer>
+            <EditTitle>Your essay text</EditTitle>
+            <TextBox value={editableEssayText()} onChange={e => console.log(e)} />
             <button onClick={() => startOver()}>Start Over</button>
-          </div>
-        </Pane>
+          </EditContainer>
+        </EditPane>
       }
       
     </>
@@ -65,22 +56,59 @@ const App = ({ dispatch, essayText, fieldOrder, allFieldsAnswered }) => {
 const Pane = styled.div`
   flex: 1;
   padding: 24px;
+  justify-content: center;
 `;
 
-const Left = styled(Pane)`
-  
+const RightPane = styled(Pane)`
+  background-color: #fafbfd;
 `;
 
-const Right = styled(Pane)`
-  background-color: #ffffff;
+const EditPane = styled(Pane)`
+  display: flex;
 `;
 
-const Title = styled.h2`
-
+const Title = styled.h3`
+  margin: 0.5em 0 1em;
 `;
+
+const EditTitle = styled(Title)`
+  text-align: center;
+`;
+
+const EditContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+`;
+
+const Preview = styled.div`
+  margin-bottom: 8em;
+`;
+
+const TextBox = styled.textarea`
+  resize: none;
+  border: 0;
+  padding: 12px;
+  margin-bottom: 3em;
+  font-size: 14px;
+  height: 10em;
+`;
+
+App.propTypes = {
+  clearFields: PropTypes.func.isRequired,
+  essayText: PropTypes.string.isRequired,
+  fieldOrder: PropTypes.array.isRequired,
+  allFieldsAnswered: PropTypes.bool.isRequired,
+};
 
 const mapStateToProps = (state) => {
   return state;
 };
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = dispatch => {
+  return {
+    clearFields: () => dispatch(clearFields())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
