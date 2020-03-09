@@ -44,6 +44,7 @@ export function reducer(state = INITIAL_STATE, action) {
       // Define constants
       const fieldAnswers = state.fieldAnswers;
       const fieldName = action.payload.fieldName;
+      const idx = action.payload.idx;
       const answer = action.payload.answer;
 
       const isDifferentAnswer = !fieldAnswers[fieldName] ?
@@ -80,7 +81,7 @@ export function reducer(state = INITIAL_STATE, action) {
           if (newAnswer) {
             const keyTemplateNum = fieldAnswers[key].templateNum;
             const newText = getTextTemplates(key)[keyTemplateNum].replace('$answer', `<b>${newAnswer}</b>`);
-            newEssayText.push(newText)
+            newEssayText[state.fieldOrder.indexOf(key)] = newText;
           } 
         }
       }
@@ -101,8 +102,8 @@ export function reducer(state = INITIAL_STATE, action) {
 // Action creators
 // ----------------------------------------------------------------------------
 
-export function submitField({ id, answer }) {
-  return { type: SUBMIT_FIELD, payload: { fieldName: id, answer } };
+export function submitField({ id, idx, answer }) {
+  return { type: SUBMIT_FIELD, payload: { fieldName: id, idx, answer } };
 }
 
 export function clearFields() {
